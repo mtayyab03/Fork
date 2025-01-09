@@ -9,6 +9,7 @@ import {
   Alert,
   Modal,
   FlatList,
+  ScrollView,
 } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { MaterialIcons, FontAwesome } from "@expo/vector-icons";
@@ -71,25 +72,37 @@ const NewPostScreen = ({ navigation }) => {
   };
 
   const pickImage = async () => {
-    let permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access media library is required!");
+    if (images.length >= 3) {
+      Alert.alert("Limit Reached", "You can upload a maximum of 3 images.");
       return;
     }
 
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All, // Allows both images and videos
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert(
+        "Permission Required",
+        "Please allow access to the media library."
+      );
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       quality: 1,
     });
 
     if (!result.canceled) {
-      setSelectedMedia(result.assets[0].uri); // Save the selected image/video URI
-      setMediaType(result.assets[0].type); // Set media type
+      setImages((prevImages) => [...prevImages, result.assets[0].uri]);
     }
   };
+
+  const handleRemoveImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+
   const handleSubmit = () => {
     if (!selectedMedia || caption.trim() === "") {
       Alert.alert("Please add an image and write a caption.");
@@ -145,30 +158,32 @@ const NewPostScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Images Upload */}
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={pickImage} // Trigger media picker on press
+      {/* Uploaded Images */}
+
+      <View
         style={{
-          marginTop: RFPercentage(4),
+          flexDirection: "row",
           alignItems: "center",
-          justifyContent: "center",
-          width: RFPercentage(12),
-          height: RFPercentage(12),
-          borderWidth: RFPercentage(0.2),
-          borderColor: Colors.stroke,
-          backgroundColor: Colors.ligthBlack,
-          borderRadius: RFPercentage(2),
+          marginTop: RFPercentage(5),
         }}
       >
-        {selectedMedia ? (
-          <Image
-            source={{ uri: selectedMedia }}
-            style={styles.media}
-            resizeMode="cover"
-          />
-        ) : (
-          <>
+        <View style={styles.imageContainer}>
+          {images.map((imageUri, index) => (
+            <View key={index} style={styles.imageWrapper}>
+              <Image source={{ uri: imageUri }} style={styles.image} />
+              <TouchableOpacity
+                style={styles.removeButton}
+                onPress={() => handleRemoveImage(index)}
+              >
+                <FontAwesome name="times-circle" size={20} color={Colors.red} />
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+
+        {/* Upload Button */}
+        {images.length < 3 && (
+          <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
             <View
               style={{
                 alignItems: "center",
@@ -194,10 +209,9 @@ const NewPostScreen = ({ navigation }) => {
             >
               Upload Image
             </Text>
-          </>
+          </TouchableOpacity>
         )}
-      </TouchableOpacity>
-
+      </View>
       {/* images upload end */}
 
       <View style={{ marginTop: RFPercentage(2) }} />
@@ -455,5 +469,42 @@ const styles = StyleSheet.create({
     fontSize: RFPercentage(1.7),
     color: Colors.white,
     fontFamily: FontFamily.regular,
+  },
+
+  imageContainer: {
+    flexDirection: "row",
+  },
+  imageWrapper: {
+    marginRight: RFPercentage(2),
+    position: "relative",
+    width: RFPercentage(12),
+    height: RFPercentage(12),
+  },
+  image: {
+    width: RFPercentage(12),
+    height: RFPercentage(12),
+    borderRadius: RFPercentage(1),
+  },
+  removeButton: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    backgroundColor: Colors.white,
+    borderRadius: RFPercentage(2),
+  },
+  uploadButton: {
+    alignItems: "center",
+    justifyContent: "center",
+    width: RFPercentage(12),
+    height: RFPercentage(12),
+    borderWidth: RFPercentage(0.2),
+    borderColor: Colors.stroke,
+    backgroundColor: Colors.ligthBlack,
+    borderRadius: RFPercentage(1),
+  },
+  uploadText: {
+    marginTop: RFPercentage(1),
+    color: Colors.lightWhite,
+    fontSize: RFPercentage(1.5),
   },
 });

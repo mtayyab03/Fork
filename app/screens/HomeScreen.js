@@ -31,6 +31,7 @@ import { FontFamily } from "../config/font";
 const HomeScreen = ({ navigation }) => {
   const [selectedCategory, setSelectedCategory] = useState("Select Category");
   const [isCategoryModalVisible, setIsCategoryModalVisible] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0); // For dot indicator
 
   const handleCategorySelect = (item) => {
     setSelectedCategory(item);
@@ -42,7 +43,10 @@ const HomeScreen = ({ navigation }) => {
   const cards = [
     {
       id: 1,
-      mediaSource: icons.gold,
+      mediaSource: [
+        require("../../assets/images/gold.png"), // Replace with your local or remote images
+        require("../../assets/images/rice.png"),
+      ],
       mediaType: "image", // Specify media type
       name: "Darrel Halland",
       profile: icons.profile4,
@@ -55,7 +59,7 @@ const HomeScreen = ({ navigation }) => {
     },
     {
       id: 2,
-      mediaSource: icons.rice,
+      mediaSource: [require("../../assets/images/rice.png")],
       mediaType: "image", // Specify media type
       name: "Nicolas Kimmer",
       profile: icons.profile1,
@@ -77,6 +81,14 @@ const HomeScreen = ({ navigation }) => {
 
   const clearFilters = () => {
     setSelectedCategory("Select Category"); // Reset to default
+  };
+
+  const handleScroll = (event) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const index = Math.round(
+      contentOffsetX / event.nativeEvent.layoutMeasurement.width
+    );
+    setCurrentIndex(index);
   };
 
   return (
@@ -258,13 +270,50 @@ const HomeScreen = ({ navigation }) => {
             </View>
 
             {/* image */}
-            <Image
+            {/* Check if multiple images */}
+            {item.mediaSource.length > 1 ? (
+              <>
+                {/* Swiper */}
+                <FlatList
+                  data={item.mediaSource}
+                  horizontal
+                  pagingEnabled
+                  showsHorizontalScrollIndicator={false}
+                  onScroll={handleScroll}
+                  renderItem={({ item: media, index }) => (
+                    <Image
+                      key={index}
+                      style={styles.mediaImage}
+                      source={media}
+                    />
+                  )}
+                />
+
+                {/* Dot Indicator */}
+                <View style={styles.dotsContainer}>
+                  {item.mediaSource.map((_, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.dot,
+                        currentIndex === index && styles.activeDot,
+                      ]}
+                    />
+                  ))}
+                </View>
+              </>
+            ) : (
+              // Single image
+              <Image style={styles.mediaImage} source={item.mediaSource[0]} />
+            )}
+
+            {/* <Image
               style={{
                 width: "100%",
                 height: RFPercentage(42),
               }}
               source={item.mediaSource}
-            />
+            /> */}
 
             {/* like comment section */}
             <View
@@ -395,6 +444,33 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: Colors.blacky,
+  },
+
+  // flatlist swiper
+
+  mediaImage: {
+    width: RFPercentage(45.5),
+    height: RFPercentage(40),
+  },
+  dotsContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: RFPercentage(1),
+  },
+  dot: {
+    width: RFPercentage(1),
+    height: RFPercentage(1),
+    borderRadius: RFPercentage(0.5),
+    backgroundColor: Colors.grey,
+    marginHorizontal: RFPercentage(0.3),
+  },
+  activeDot: {
+    backgroundColor: Colors.white,
+  },
+  cardFooter: {
+    marginTop: RFPercentage(2),
+    width: "92%",
+    alignItems: "flex-start",
   },
 
   // modal
