@@ -16,7 +16,6 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 import { Formik } from "formik";
 import * as yup from "yup";
 import { MaterialCommunityIcons, FontAwesome } from "@expo/vector-icons";
-import * as ImagePicker from "expo-image-picker";
 
 //Components
 import Screen from "../components/Screen";
@@ -55,28 +54,6 @@ const SignupScreen = (props) => {
       .oneOf([yup.ref("password"), null], "Passwords must match"),
   });
 
-  // Upload Image function
-  const handleImageUpload = async () => {
-    const permissionResult =
-      await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      Alert.alert("Permission to access camera roll is required!");
-      return;
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImageUri(result.assets[0].uri); // Store the image URI in state
-    }
-  };
-
   // Handle signup function
   const handleSignup = async (values) => {
     setLoading(true);
@@ -113,7 +90,7 @@ const SignupScreen = (props) => {
             color: Colors.white,
           }}
         >
-          App Logo
+          RawE
         </Text>
       </View>
 

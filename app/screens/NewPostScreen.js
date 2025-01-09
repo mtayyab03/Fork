@@ -32,7 +32,7 @@ const NewPostScreen = ({ navigation }) => {
   const [quatity, onChangeQuantity] = useState("");
   const [make, onChangeMake] = useState("");
   const [model, onChangeModel] = useState("");
-
+  const [images, setImages] = useState([]);
   const [selectedMedia, setSelectedMedia] = useState(null);
   const [mediaType, setMediaType] = useState("");
 
@@ -60,10 +60,6 @@ const NewPostScreen = ({ navigation }) => {
     "Others",
   ];
 
-  // const handleCategorySelect = (item) => {
-  //   setSubCategory(item);
-  //   setisSubCategoryModalVisible(false); // Close the modal after selecting
-  // };
   const handleCategorySelect = (item) => {
     if (!isSubCategoryModalVisible) {
       setSelectedCategory(item);
@@ -74,7 +70,7 @@ const NewPostScreen = ({ navigation }) => {
     }
   };
 
-  const pickImageOrVideo = async () => {
+  const pickImage = async () => {
     let permissionResult =
       await ImagePicker.requestMediaLibraryPermissionsAsync();
 
@@ -149,20 +145,20 @@ const NewPostScreen = ({ navigation }) => {
         </View>
       </View>
 
-      {/* Upload */}
+      {/* Images Upload */}
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={pickImageOrVideo} // Trigger media picker on press
+        onPress={pickImage} // Trigger media picker on press
         style={{
           marginTop: RFPercentage(4),
           alignItems: "center",
           justifyContent: "center",
-          width: RFPercentage(20),
-          height: RFPercentage(20),
+          width: RFPercentage(12),
+          height: RFPercentage(12),
           borderWidth: RFPercentage(0.2),
           borderColor: Colors.stroke,
           backgroundColor: Colors.ligthBlack,
-          borderRadius: RFPercentage(3),
+          borderRadius: RFPercentage(2),
         }}
       >
         {selectedMedia ? (
@@ -201,6 +197,8 @@ const NewPostScreen = ({ navigation }) => {
           </>
         )}
       </TouchableOpacity>
+
+      {/* images upload end */}
 
       <View style={{ marginTop: RFPercentage(2) }} />
       <View style={styles.emailmain}>
@@ -368,7 +366,7 @@ const styles = StyleSheet.create({
   },
   description: {
     width: "90%",
-    height: RFPercentage(13),
+    height: RFPercentage(12),
     borderRadius: RFPercentage(1),
     backgroundColor: Colors.ligthBlack,
     paddingHorizontal: RFPercentage(1.5),
@@ -404,13 +402,12 @@ const styles = StyleSheet.create({
   media: {
     width: "100%",
     height: "100%",
-    borderRadius: RFPercentage(3),
+    borderRadius: RFPercentage(2),
   },
   loginbutton: {
     width: "100%",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: RFPercentage(1),
   },
   emailmain: {
     width: "90%",
