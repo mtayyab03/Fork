@@ -1,6 +1,8 @@
 export const FontFamily = {
-  regular: "Poppins_400Regular",
-  medium: "Poppins_500Medium",
-  semiBold: "Poppins_600SemiBold",
-  bold: "Poppins_700Bold",
+  regular: "Orbitron_400Regular",
+  medium: "Orbitron_500Medium",
+  semiBold: "Orbitron_600SemiBold",
+  bold: "Orbitron_700Bold",
+  extraBold: "Orbitron_800ExtraBold",
+  fontBlack: "Orbitron_900Black",
 };

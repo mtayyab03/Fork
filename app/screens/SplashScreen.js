@@ -6,31 +6,26 @@ import Colors from "../config/Colors";
 import { FontFamily } from "../config/font";
 
 export default function SplashScreen(props) {
-  useEffect(() => {
-    // After 3 seconds, navigate to LoginScreen
-    const timer = setTimeout(() => {
-      props.navigation.navigate("LoginScreen");
-    }, 3000);
+  // useEffect(() => {
+  //   // After 3 seconds, navigate to LoginScreen
+  //   const timer = setTimeout(() => {
+  //     props.navigation.navigate("HomeScreen");
+  //   }, 3000);
 
-    // Clear the timer when the component unmounts
-    return () => clearTimeout(timer);
-  }, []);
+  //   // Clear the timer when the component unmounts
+  //   return () => clearTimeout(timer);
+  // }, []);
   return (
     <View style={styles.background}>
-      <TouchableOpacity
-        activeOpacity={0.7}
-        onPress={() => {
-          props.navigation.navigate("LoginScreen");
-        }}
-      >
+      <TouchableOpacity activeOpacity={0.7}>
         <Text
           style={{
             fontFamily: FontFamily.medium,
-            fontSize: RFPercentage(3.4),
+            fontSize: RFPercentage(5.4),
             color: Colors.white,
           }}
         >
-          App Logo
+          Fork
         </Text>
       </TouchableOpacity>
     </View>

@@ -2,11 +2,13 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import {
   useFonts,
-  Poppins_400Regular,
-  Poppins_500Medium,
-  Poppins_600SemiBold,
-  Poppins_700Bold,
-} from "@expo-google-fonts/poppins";
+  Orbitron_400Regular,
+  Orbitron_500Medium,
+  Orbitron_600SemiBold,
+  Orbitron_700Bold,
+  Orbitron_800ExtraBold,
+  Orbitron_900Black,
+} from "@expo-google-fonts/orbitron";
 
 //navigation
 import NavigationStack from "./app/navigation/NavigationStack";
@@ -16,13 +18,12 @@ import AppLoading from "./app/components/AppLoading";
 
 export default function App() {
   const [fontsLoaded] = useFonts({
-    Poppins_400Regular,
-
-    Poppins_500Medium,
-
-    Poppins_600SemiBold,
-
-    Poppins_700Bold,
+    Orbitron_400Regular,
+    Orbitron_500Medium,
+    Orbitron_600SemiBold,
+    Orbitron_700Bold,
+    Orbitron_800ExtraBold,
+    Orbitron_900Black,
   });
 
   if (!fontsLoaded) {
