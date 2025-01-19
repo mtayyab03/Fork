@@ -18,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 //Components
 import Screen from "../components/Screen";
 import AppButton from "../components/AppButton";
+import InputField from "../components/InputField";
 
 //config
 import icons from "../config/icons";
@@ -26,6 +27,8 @@ import { FontFamily } from "../config/font";
 
 const AboutScreen = () => {
   const navigation = useNavigation(); // 👈 Hook to get navigation
+  const [name, setName] = useState("");
+  const [age, setAge] = useState("");
   // Function to open drawer
   const openDrawer = () => {
     navigation.openDrawer();
@@ -73,6 +76,44 @@ const AboutScreen = () => {
           About
         </Text>
       </View>
+
+      <View style={{ marginTop: RFPercentage(2) }} />
+      {/* ID */}
+      <View style={styles.row}>
+        <Text style={styles.text}>Device Id</Text>
+
+        <View style={styles.emailmain}>
+          <Text
+            style={{
+              fontFamily: FontFamily.medium,
+              fontSize: RFPercentage(2),
+              color: Colors.black35,
+            }}
+          >
+            758923703
+          </Text>
+        </View>
+      </View>
+
+      {/* name */}
+      <View style={styles.row}>
+        <Text style={styles.text}>Name</Text>
+      </View>
+      <InputField
+        placeTitle="Enter your name"
+        value={name}
+        onChange={setName}
+      />
+
+      {/* age */}
+      <View style={styles.row}>
+        <Text style={styles.text}>Age</Text>
+      </View>
+      <InputField placeTitle="Enter your age" value={age} onChange={setAge} />
+
+      <TouchableOpacity style={styles.loginbutton} activeOpacity={0.7}>
+        <AppButton title="Upload" />
+      </TouchableOpacity>
     </LinearGradient>
   );
 };
@@ -83,5 +124,35 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
+  },
+
+  row: {
+    width: "90%",
+    justifyContent: "center",
+    marginTop: RFPercentage(2),
+  },
+  text: {
+    fontFamily: FontFamily.medium,
+    fontSize: RFPercentage(2),
+    color: Colors.black35,
+    marginBottom: RFPercentage(1),
+  },
+  emailmain: {
+    width: "100%",
+    height: RFPercentage(6.5),
+    backgroundColor: Colors.priYellow,
+    borderRadius: RFPercentage(1),
+    borderColor: Colors.primary,
+    color: Colors.blacky,
+    paddingHorizontal: RFPercentage(2),
+    justifyContent: "center",
+  },
+  loginbutton: {
+    width: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: RFPercentage(1.5),
+    position: "absolute",
+    bottom: RFPercentage(7),
   },
 });

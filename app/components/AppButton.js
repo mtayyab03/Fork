@@ -29,7 +29,7 @@ export default function AppButton({ title, buttonColor }) {
 const styles = StyleSheet.create({
   buttontext: {
     color: Colors.blacky,
-    fontSize: RFPercentage(1.8),
+    fontSize: RFPercentage(2.2),
     fontFamily: FontFamily.semiBold,
   },
 });

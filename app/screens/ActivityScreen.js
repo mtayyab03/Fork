@@ -80,12 +80,60 @@ const ActivityScreen = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHint, setSelectedHint] = useState("");
+  const [cardStates, setCardStates] = useState(
+    gameCard.map((item) => ({
+      id: item.id,
+      bgColor: Colors.priYellow,
+      textColor: Colors.black35,
+    }))
+  );
 
+  const [lastTap, setLastTap] = useState(null);
   // Function to handle item click
   const handleItemPress = (hint) => {
     setSelectedHint(hint);
     setModalVisible(true);
   };
+
+  // Function to handle double tap
+  const handleDoubleTap = (id) => {
+    setCardStates((prevStates) =>
+      prevStates.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              bgColor:
+                item.bgColor === Colors.priYellow
+                  ? Colors.black35
+                  : Colors.priYellow,
+              textColor:
+                item.textColor === Colors.black35
+                  ? Colors.priYellow
+                  : Colors.black35,
+            }
+          : item
+      )
+    );
+  };
+
+  const handleItemTap = (id, hint) => {
+    const now = Date.now();
+
+    if (lastTap && now - lastTap < 300) {
+      // Double tap detected
+      handleDoubleTap(id);
+      setLastTap(null); // Reset tap
+    } else {
+      // Single tap, open modal after delay
+      setLastTap(now);
+      setTimeout(() => {
+        if (lastTap) {
+          handleDoubleTap(id);
+        }
+      }, 300);
+    }
+  };
+
   return (
     <LinearGradient
       colors={[Colors.secGrey, Colors.priGrey, Colors.secGrey]} // Radial-like effect
@@ -159,34 +207,40 @@ const ActivityScreen = () => {
           justifyContent: "center",
         }}
       >
-        {gameCard.map((item) => (
-          <TouchableOpacity
-            key={item.id}
-            onPress={() => handleItemPress(item.hint)}
-            activeOpacity={0.7}
-            style={{
-              width: RFPercentage(8),
-              height: RFPercentage(8),
-              borderRadius: RFPercentage(1),
-              backgroundColor: Colors.priYellow,
-              alignItems: "center",
-              justifyContent: "center",
-              padding: RFPercentage(1.5),
-              margin: RFPercentage(1),
-            }}
-          >
-            <Text
+        {gameCard.map((item) => {
+          const cardState = cardStates.find((state) => state.id === item.id);
+          return (
+            <TouchableOpacity
+              key={item.id}
+              onPress={() => handleItemTap(item.id, item.hint)}
+              onLongPress={() => handleItemPress(item.hint)}
+              activeOpacity={0.7}
               style={{
-                fontFamily: FontFamily.medium,
-                fontSize: RFPercentage(1.8),
-                color: Colors.black35,
-                textAlign: "center",
+                width: RFPercentage(8),
+                height: RFPercentage(8),
+                borderRadius: RFPercentage(1),
+                backgroundColor: cardState
+                  ? cardState.bgColor
+                  : Colors.priYellow,
+                alignItems: "center",
+                justifyContent: "center",
+                padding: RFPercentage(1.5),
+                margin: RFPercentage(1),
               }}
             >
-              {item.name}
-            </Text>
-          </TouchableOpacity>
-        ))}
+              <Text
+                style={{
+                  fontFamily: FontFamily.medium,
+                  fontSize: RFPercentage(1.8),
+                  color: cardState ? cardState.textColor : Colors.black35,
+                  textAlign: "center",
+                }}
+              >
+                {item.name}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
 
       <TouchableOpacity style={styles.loginbutton} activeOpacity={0.7}>
@@ -229,7 +283,7 @@ const ActivityScreen = () => {
             <Text style={styles.modalTitle}>Hint!</Text>
 
             {/* Show text or image based on hint */}
-            {selectedHint.startsWith("http") ? (
+            {selectedHint && selectedHint.startsWith("http") ? (
               <Image source={{ uri: selectedHint }} style={styles.hintImage} />
             ) : (
               <View style={{ width: "70%" }}>
