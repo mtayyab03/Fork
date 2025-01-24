@@ -6,6 +6,7 @@ import {
   View,
   Text,
   Modal,
+  Alert,
 } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { Ionicons, AntDesign, FontAwesome6 } from "@expo/vector-icons";
@@ -80,39 +81,193 @@ const ActivityScreen = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHint, setSelectedHint] = useState("");
-  const [cardStates, setCardStates] = useState(
-    gameCard.map((item) => ({
-      id: item.id,
-      bgColor: Colors.priYellow,
-      textColor: Colors.black35,
-    }))
-  );
+  // const [cardStates, setCardStates] = useState(
+  //   gameCard.map((item) => ({
+  //     id: item.id,
+  //     bgColor: Colors.priYellow,
+  //     textColor: Colors.black35,
+  //   }))
+  // );
 
   const [lastTap, setLastTap] = useState(null);
+
+  const [basicLocked, setBasicLocked] = useState(false);
+  const [intermediateLocked, setIntermediateLocked] = useState(false);
+  const [advancedLocked, setAdvancedLocked] = useState(false);
+
+  // Item sets for each stage
+  const basicSets = [
+    ["Item A", "Item B", "Item C", "Item D"],
+    ["Item E", "Item F", "Item G", "Item H"],
+    ["Item I", "Item J", "Item K", "Item L"],
+    ["Item M", "Item N", "Item O", "Item P"],
+  ];
+  const intermediateSets = [
+    ["Item A", "Item F", "Item I", "Item M"],
+    ["Item B", "Item E", "Item J", "Item P"],
+    ["Item C", "Item G", "Item K", "Item O"],
+    ["Item D", "Item H", "Item L", "Item N"],
+  ];
+  const advancedSets = [
+    ["Item A", "Item E", "Item K", "Item P"],
+    ["Item B", "Item H", "Item I", "Item M"],
+    ["Item C", "Item F", "Item L", "Item N"],
+    ["Item D", "Item G", "Item J", "Item O"],
+  ];
+
   // Function to handle item click
   const handleItemPress = (hint) => {
     setSelectedHint(hint);
     setModalVisible(true);
   };
 
-  // Function to handle double tap
-  const handleDoubleTap = (id) => {
+  const [cardStates, setCardStates] = useState(
+    gameCard.map((card) => ({
+      id: card.id,
+      name: card.name,
+      bgColor: Colors.priYellow,
+      textColor: Colors.black35,
+      selected: false,
+    }))
+  );
+  const [lockedStage, setLockedStage] = useState(null); // Locked stage
+  const [groups, setGroups] = useState([]); // Formed groups
+
+  const stages = {
+    basic: basicSets,
+    intermediate: intermediateSets,
+    advanced: advancedSets,
+  };
+
+  // Handle card selection
+  const handleCardSelection = (id) => {
+    const card = cardStates.find((item) => item.id === id);
+    if (!card) return;
+
+    // Check if the card can be selected
+    if (!isSelectable(id)) {
+      Alert.alert(
+        "Selection Restricted",
+        "This card belongs to a locked stage."
+      );
+      return;
+    }
+
+    // Update card states
+    const updatedStates = cardStates.map((item) =>
+      item.id === id
+        ? {
+            ...item,
+            selected: !item.selected,
+            bgColor: !item.selected ? Colors.black35 : Colors.priYellow,
+            textColor: !item.selected ? Colors.priYellow : Colors.black35,
+          }
+        : item
+    );
+    setCardStates(updatedStates);
+
+    // Check selected cards
+    const selectedItems = updatedStates
+      .filter((item) => item.selected)
+      .map((item) => item.name);
+
+    if (selectedItems.length === 4) {
+      // If the first group is being formed, set the locked stage
+      if (!lockedStage) {
+        const stage = validateSelection(selectedItems);
+        if (stage) {
+          setLockedStage(stage); // Lock the stage
+          setGroups((prevGroups) => [...prevGroups, selectedItems]);
+          resetSelection();
+
+          Alert.alert(
+            "Stage Locked",
+            `Stage locked to ${stage}. Group 1 formed: ${JSON.stringify(
+              selectedItems
+            )}.`
+          );
+          return;
+        } else {
+          Alert.alert(
+            "Invalid Selection",
+            "The selected items do not match any valid group."
+          );
+          resetSelection();
+          return;
+        }
+      }
+
+      // Validate against the locked stage
+      const isValidGroup = stages[lockedStage].some((set) =>
+        set.every((item) => selectedItems.includes(item))
+      );
+
+      if (isValidGroup) {
+        setGroups((prevGroups) => [...prevGroups, selectedItems]);
+        resetSelection();
+
+        if (groups.length + 1 === 4) {
+          Alert.alert(
+            "Congratulations!",
+            "You have formed all 4 groups and won the game!"
+          );
+        } else {
+          Alert.alert(
+            "Group Formed",
+            `Group ${groups.length + 1} formed: ${JSON.stringify(
+              selectedItems
+            )}.`
+          );
+        }
+      } else {
+        Alert.alert(
+          "Wrong Selection",
+          "The selected set does not belong to the locked stage.",
+          [{ text: "OK", onPress: resetSelection }]
+        );
+      }
+    }
+  };
+
+  // Validate selected items against predefined stages
+  const validateSelection = (selectedItems) => {
+    const checkSet = (sets) =>
+      sets.some((set) => set.every((item) => selectedItems.includes(item)));
+
+    if (checkSet(basicSets)) return "basic";
+    if (checkSet(intermediateSets)) return "intermediate";
+    if (checkSet(advancedSets)) return "advanced";
+
+    return false; // No match found
+  };
+
+  // Check if a card is selectable
+  const isSelectable = (id) => {
+    const card = cardStates.find((item) => item.id === id);
+    if (!card) return false;
+
+    // Ensure card is part of any valid group in the locked stage
+    if (lockedStage) {
+      return stages[lockedStage].some((set) => set.includes(card.name));
+    }
+
+    // If no stage is locked, allow selection from all stages
+    return (
+      basicSets.some((set) => set.includes(card.name)) ||
+      intermediateSets.some((set) => set.includes(card.name)) ||
+      advancedSets.some((set) => set.includes(card.name))
+    );
+  };
+
+  // Reset selection
+  const resetSelection = () => {
     setCardStates((prevStates) =>
-      prevStates.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              bgColor:
-                item.bgColor === Colors.priYellow
-                  ? Colors.black35
-                  : Colors.priYellow,
-              textColor:
-                item.textColor === Colors.black35
-                  ? Colors.priYellow
-                  : Colors.black35,
-            }
-          : item
-      )
+      prevStates.map((item) => ({
+        ...item,
+        selected: false,
+        bgColor: Colors.priYellow,
+        textColor: Colors.black35,
+      }))
     );
   };
 
@@ -122,13 +277,13 @@ const ActivityScreen = () => {
     if (lastTap && now - lastTap < 300) {
       // Double tap detected
       handleDoubleTap(id);
-      setLastTap(null); // Reset tap
+      setLastTap(null); // Reset last tap
     } else {
-      // Single tap, open modal after delay
+      // Single tap
       setLastTap(now);
       setTimeout(() => {
         if (lastTap) {
-          handleDoubleTap(id);
+          handleItemPress(hint); // Open modal for hint on single tap
         }
       }, 300);
     }
@@ -209,10 +364,20 @@ const ActivityScreen = () => {
       >
         {gameCard.map((item) => {
           const cardState = cardStates.find((state) => state.id === item.id);
+          const isCardSelectable = isSelectable(item.id);
           return (
             <TouchableOpacity
               key={item.id}
-              onPress={() => handleItemTap(item.id, item.hint)}
+              onPress={() => {
+                if (isCardSelectable) {
+                  handleCardSelection(item.id);
+                } else {
+                  Alert.alert(
+                    "Stage Locked",
+                    `This card belongs to the ${lockedStage} stage, which is locked.`
+                  );
+                }
+              }}
               onLongPress={() => handleItemPress(item.hint)}
               activeOpacity={0.7}
               style={{
