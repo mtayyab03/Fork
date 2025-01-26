@@ -1,19 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Image,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  Platform,
-  Modal,
-} from "react-native";
+import { Image, TouchableOpacity, StyleSheet, View, Text } from "react-native";
 import { RFPercentage } from "react-native-responsive-fontsize";
 import { FontAwesome6, Fontisto, MaterialIcons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../Context/ThemeProvider";
 
 //Components
 import Screen from "../components/Screen";
@@ -29,6 +20,7 @@ const AboutScreen = () => {
   const navigation = useNavigation(); // 👈 Hook to get navigation
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
+  const { Colors } = useTheme();
   // Function to open drawer
   const openDrawer = () => {
     navigation.openDrawer();
@@ -80,9 +72,19 @@ const AboutScreen = () => {
       <View style={{ marginTop: RFPercentage(2) }} />
       {/* ID */}
       <View style={styles.row}>
-        <Text style={styles.text}>Device Id</Text>
+        <Text style={[styles.text, { color: Colors.black35 }]}>Device Id</Text>
 
-        <View style={styles.emailmain}>
+        <View
+          style={[
+            styles.emailmain,
+            {
+              backgroundColor: Colors.priYellow,
+              borderRadius: RFPercentage(1),
+              borderColor: Colors.primary,
+              color: Colors.blacky,
+            },
+          ]}
+        >
           <Text
             style={{
               fontFamily: FontFamily.medium,
@@ -97,7 +99,7 @@ const AboutScreen = () => {
 
       {/* name */}
       <View style={styles.row}>
-        <Text style={styles.text}>Name</Text>
+        <Text style={[styles.text, { color: Colors.black35 }]}>Name</Text>
       </View>
       <InputField
         placeTitle="Enter your name"
@@ -107,7 +109,7 @@ const AboutScreen = () => {
 
       {/* age */}
       <View style={styles.row}>
-        <Text style={styles.text}>Age</Text>
+        <Text style={[styles.text, { color: Colors.black35 }]}>Age</Text>
       </View>
       <InputField placeTitle="Enter your age" value={age} onChange={setAge} />
 
@@ -134,16 +136,12 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: FontFamily.medium,
     fontSize: RFPercentage(2),
-    color: Colors.black35,
+
     marginBottom: RFPercentage(1),
   },
   emailmain: {
     width: "100%",
     height: RFPercentage(6.5),
-    backgroundColor: Colors.priYellow,
-    borderRadius: RFPercentage(1),
-    borderColor: Colors.primary,
-    color: Colors.blacky,
     paddingHorizontal: RFPercentage(2),
     justifyContent: "center",
   },

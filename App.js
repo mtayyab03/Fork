@@ -12,6 +12,7 @@ import {
 
 //navigation
 import NavigationStack from "./app/navigation/NavigationStack";
+import { ThemeProvider } from "./app/Context/ThemeProvider";
 
 //component
 import AppLoading from "./app/components/AppLoading";
@@ -30,9 +31,11 @@ export default function App() {
     return <AppLoading />;
   } else {
     return (
-      <NavigationContainer>
-        <NavigationStack />
-      </NavigationContainer>
+      <ThemeProvider>
+        <NavigationContainer>
+          <NavigationStack />
+        </NavigationContainer>
+      </ThemeProvider>
     );
   }
 }

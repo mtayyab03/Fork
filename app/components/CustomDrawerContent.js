@@ -4,11 +4,13 @@ import { DrawerContentScrollView } from "@react-navigation/drawer";
 import { AntDesign } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { RFPercentage } from "react-native-responsive-fontsize";
+import { useTheme } from "../Context/ThemeProvider";
 //config
 import Colors from "../config/Colors";
 import { FontFamily } from "../config/font";
 
 const CustomDrawerContent = (props) => {
+  const { Colors } = useTheme();
   return (
     // <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
     <LinearGradient
@@ -37,7 +39,7 @@ const CustomDrawerContent = (props) => {
           style={{
             fontFamily: FontFamily.semiBold,
             fontSize: RFPercentage(3.5),
-            color: Colors.blacky,
+            color: "black",
             marginLeft: RFPercentage(3),
           }}
         >

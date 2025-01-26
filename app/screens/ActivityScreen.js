@@ -12,6 +12,7 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 import { Ionicons, AntDesign, FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "../Context/ThemeProvider";
 
 //Components
 import Screen from "../components/Screen";
@@ -23,6 +24,7 @@ import { FontFamily } from "../config/font";
 
 const ActivityScreen = () => {
   const navigation = useNavigation(); // 👈 Hook to get navigation
+  const { Colors } = useTheme();
   // Function to open drawer
   const openDrawer = () => {
     navigation.openDrawer();
@@ -81,19 +83,8 @@ const ActivityScreen = () => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedHint, setSelectedHint] = useState("");
-  // const [cardStates, setCardStates] = useState(
-  //   gameCard.map((item) => ({
-  //     id: item.id,
-  //     bgColor: Colors.priYellow,
-  //     textColor: Colors.black35,
-  //   }))
-  // );
 
   const [lastTap, setLastTap] = useState(null);
-
-  const [basicLocked, setBasicLocked] = useState(false);
-  const [intermediateLocked, setIntermediateLocked] = useState(false);
-  const [advancedLocked, setAdvancedLocked] = useState(false);
 
   // Item sets for each stage
   const basicSets = [
@@ -445,14 +436,18 @@ const ActivityScreen = () => {
               </TouchableOpacity>
             </View>
             {/* Hint Text */}
-            <Text style={styles.modalTitle}>Hint!</Text>
+            <Text style={[styles.modalTitle, { color: Colors.blacky }]}>
+              Hint!
+            </Text>
 
             {/* Show text or image based on hint */}
             {selectedHint && selectedHint.startsWith("http") ? (
               <Image source={{ uri: selectedHint }} style={styles.hintImage} />
             ) : (
               <View style={{ width: "70%" }}>
-                <Text style={styles.hintText}>{selectedHint}</Text>
+                <Text style={[styles.hintText, { color: Colors.text }]}>
+                  {selectedHint}
+                </Text>
               </View>
             )}
           </LinearGradient>
@@ -486,13 +481,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontFamily: FontFamily.bold,
     fontSize: RFPercentage(3),
-    color: Colors.blacky,
+
     marginBottom: RFPercentage(2),
   },
   hintText: {
     fontFamily: FontFamily.medium,
     fontSize: RFPercentage(2.5),
-    color: Colors.text,
+
     textAlign: "center",
   },
   hintImage: {

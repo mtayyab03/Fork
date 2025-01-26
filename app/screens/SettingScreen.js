@@ -11,31 +11,31 @@ import { RFPercentage } from "react-native-responsive-fontsize";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
-
+import { useTheme } from "../Context/ThemeProvider";
 //Components
 import Screen from "../components/Screen";
 import AppButton from "../components/AppButton";
 
 //config
 import icons from "../config/icons";
-import Colors from "../config/Colors";
+// import Colors from "../config/Colors";
 import { FontFamily } from "../config/font";
 import InputField from "../components/InputField";
 
 const SettingScreen = () => {
   const navigation = useNavigation(); // 👈 Hook to get navigation
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const [text, setText] = useState("");
+  const { isDarkMode, Colors, toggleTheme } = useTheme();
   // Function to open drawer
   const openDrawer = () => {
     navigation.openDrawer();
   };
 
-  // Toggle theme
-  const toggleTheme = () => {
-    setIsDarkMode((prevMode) => !prevMode);
-  };
-  const themeStyles = isDarkMode ? styles.darkTheme : styles.lightTheme;
+  // // Toggle theme
+  // const toggleTheme = () => {
+  //   setIsDarkMode((prevMode) => !prevMode);
+  // };
+  // const themeStyles = isDarkMode ? styles.darkTheme : styles.lightTheme;
 
   return (
     <LinearGradient
@@ -83,7 +83,7 @@ const SettingScreen = () => {
 
       {/* switch */}
       <View style={styles.row}>
-        <Text style={styles.text}>Dark Mode</Text>
+        <Text style={[styles.text, { color: Colors.black35 }]}>Dark Mode</Text>
         <Switch
           thumbColor={Colors.white}
           value={isDarkMode}
@@ -127,14 +127,8 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: FontFamily.medium,
     fontSize: RFPercentage(2),
-    color: Colors.black35,
   },
-  darkTheme: {
-    backgroundColor: "#121212",
-  },
-  lightTheme: {
-    backgroundColor: "#f5f5f5",
-  },
+
   loginbutton: {
     width: "100%",
     justifyContent: "center",
