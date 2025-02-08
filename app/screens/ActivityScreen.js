@@ -25,6 +25,7 @@ import { FontFamily } from "../config/font";
 const ActivityScreen = () => {
   const navigation = useNavigation(); // 👈 Hook to get navigation
   const { Colors } = useTheme();
+  const [wrongSelectionCount, setWrongSelectionCount] = useState(4);
   // Function to open drawer
   const openDrawer = () => {
     navigation.openDrawer();
@@ -121,6 +122,22 @@ const ActivityScreen = () => {
       selected: false,
     }))
   );
+
+  const resetGame = () => {
+    setCardStates(
+      gameCard.map((card) => ({
+        id: card.id,
+        name: card.name,
+        bgColor: Colors.priYellow,
+        textColor: Colors.black35,
+        selected: false,
+      }))
+    );
+    setLockedStage(null);
+    setGroups([]);
+    setWrongSelectionCount(4); // Reset wrong selections
+  };
+
   const [lockedStage, setLockedStage] = useState(null); // Locked stage
   const [groups, setGroups] = useState([]); // Formed groups
 
@@ -183,6 +200,7 @@ const ActivityScreen = () => {
             "Invalid Selection",
             "The selected items do not match any valid group."
           );
+          setWrongSelectionCount((prev) => Math.max(0, prev - 1));
           resetSelection();
           return;
         }
@@ -198,10 +216,9 @@ const ActivityScreen = () => {
         resetSelection();
 
         if (groups.length + 1 === 4) {
-          Alert.alert(
-            "Congratulations!",
-            "You have formed all 4 groups and won the game!"
-          );
+          Alert.alert("Congratulations!", "You have formed all 4 groups!", [
+            { text: "OK", onPress: resetGame },
+          ]);
         } else {
           Alert.alert(
             "Group Formed",
@@ -216,7 +233,18 @@ const ActivityScreen = () => {
           "The selected set does not belong to the locked stage.",
           [{ text: "OK", onPress: resetSelection }]
         );
+        setWrongSelectionCount((prev) => {
+          const newCount = Math.max(0, prev - 1);
+          if (newCount === 0) {
+            Alert.alert("Game Over", "You have used all your attempts.", [
+              { text: "Restart", onPress: resetGame },
+            ]);
+          }
+          return newCount;
+        });
       }
+
+      resetSelection();
     }
   };
 
@@ -318,7 +346,7 @@ const ActivityScreen = () => {
             marginLeft: RFPercentage(1.5),
           }}
         >
-          XXXX
+          {"X".repeat(wrongSelectionCount)}
         </Text>
       </View>
 
